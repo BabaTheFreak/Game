@@ -17,12 +17,14 @@ public class Game extends Canvas implements Runnable {
     private Handler handler;
 
     public Game() {
-        new Window(WIDTH, HEIGHT, "Let´s Build a Game!", this);
         handler = new Handler();
 
-        for(int i = 0; i < 50; i++) {
-            handler.addObject(new Player(random.nextInt(WIDTH), random.nextInt(HEIGHT), ID.Player));
-        }
+        this.addKeyListener(new KeyInput(handler));
+
+        new Window(WIDTH, HEIGHT, "Let´s Build a Game!", this);
+
+        handler.addObject(new Player(WIDTH / 2 - 32, HEIGHT / 2 - 32, ID.Player));
+        handler.addObject(new Player(WIDTH / 2 - 128, HEIGHT / 2 - 32, ID.Player2));
     }
 
     public synchronized void start() {
@@ -32,10 +34,10 @@ public class Game extends Canvas implements Runnable {
     }
 
     public synchronized void stop() {
-        try{
+        try {
             thread.join();
             running = false;
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -61,7 +63,7 @@ public class Game extends Canvas implements Runnable {
             }
             frames++;
 
-            if(System.currentTimeMillis() - timer > 1000) {
+            if (System.currentTimeMillis() - timer > 1000) {
                 timer += 1000;
                 System.out.println("FPS: " + frames);
                 frames = 0;
@@ -76,7 +78,7 @@ public class Game extends Canvas implements Runnable {
 
     private void render() {
         BufferStrategy bs = this.getBufferStrategy();
-        if(bs == null) {
+        if (bs == null) {
             this.createBufferStrategy(3);
             return;
         }

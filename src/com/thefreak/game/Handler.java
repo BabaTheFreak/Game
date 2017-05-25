@@ -27,4 +27,8 @@ public class Handler {
         this.objects.remove(object);
     }
 
+    public LinkedList<GameObject> getObjects() {
+        return objects;
+    }
+
 }
