@@ -6,32 +6,44 @@ import java.util.Random;
 
 public class Game extends Canvas implements Runnable {
 
-    private static final long serialVersionUID = 140840600573728354L;
-
     public static final int WIDTH = 640, HEIGHT = WIDTH / 12 * 9;
-
+    private static final long serialVersionUID = 140840600573728354L;
     private Thread thread;
     private boolean running = false;
 
     private Random random;
     private Handler handler;
     private HUD hud;
+    private Spawn spawner;
 
     public Game() {
         handler = new Handler();
 
         this.addKeyListener(new KeyInput(handler));
 
-        new Window(WIDTH, HEIGHT, "Let´s Build a Game!", this);
+        new Window(WIDTH, HEIGHT, "Awesome Game!", this);
 
         hud = new HUD();
-
+        spawner = new Spawn(handler, hud);
         random = new Random();
 
-        handler.addObject(new Player(WIDTH / 2 - 32, HEIGHT / 2 - 32, ID.Player));
-        for(int i = 0; i < 20; i++) {
-            handler.addObject(new BasicEnemy(random.nextInt(WIDTH), random.nextInt(HEIGHT), ID.BasicEnemy));
+        handler.addObject(new Player(WIDTH / 2 - 32, HEIGHT / 2 - 32, ID.Player, handler));
+        handler.addObject(new BasicEnemy(random.nextInt(Game.WIDTH), random.nextInt(Game.HEIGHT), ID.BasicEnemy, handler));
+
+    }
+
+    public static float clamp(float var, float min, float max) {
+        if (var >= max) {
+            return var = max;
+        } else if (var <= min) {
+            return var = min;
+        } else {
+            return var;
         }
+    }
+
+    public static void main(String args[]) {
+        new Game();
     }
 
     public synchronized void start() {
@@ -83,6 +95,7 @@ public class Game extends Canvas implements Runnable {
     private void tick() {
         handler.tick();
         hud.tick();
+        spawner.tick();
     }
 
     private void render() {
@@ -93,7 +106,7 @@ public class Game extends Canvas implements Runnable {
         }
         Graphics g = bs.getDrawGraphics();
 
-        g.setColor(Color.blue);
+        g.setColor(Color.black);
         g.fillRect(0, 0, WIDTH, HEIGHT);
 
         handler.render(g);
@@ -101,19 +114,5 @@ public class Game extends Canvas implements Runnable {
 
         g.dispose();
         bs.show();
-    }
-
-    public static int clamp(int var, int min, int max) {
-        if(var >= max) {
-            return var = max;
-        } else if(var <= min) {
-            return var = min;
-        } else {
-            return var;
-        }
-    }
-
-    public static void main(String args[]) {
-        new Game();
     }
 }

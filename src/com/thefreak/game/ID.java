@@ -3,6 +3,9 @@ package com.thefreak.game;
 public enum ID {
 
     Player(),
-    BasicEnemy()
+    BasicEnemy(),
+    FastEnemy(),
+    Trail(),
+    SmartEnemy()
 
 }
