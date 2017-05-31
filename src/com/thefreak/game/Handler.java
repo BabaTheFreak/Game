@@ -29,4 +29,14 @@ public class Handler {
         this.objects.remove(object);
     }
 
+    public void clearEnemys() {
+        for (int i = 0; i < objects.size(); i++) {
+            GameObject tempObject = objects.get(i);
+
+            if (tempObject.getID() == ID.Player) {
+                objects.clear();
+                addObject(new Player((int) tempObject.getX(), (int) tempObject.getY(), ID.Player, this));
+            }
+        }
+    }
 }

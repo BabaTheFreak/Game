@@ -8,28 +8,32 @@ public class Game extends Canvas implements Runnable {
 
     public static final int WIDTH = 640, HEIGHT = WIDTH / 12 * 9;
     private static final long serialVersionUID = 140840600573728354L;
+    public STATE gameState = STATE.Menu;
     private Thread thread;
     private boolean running = false;
-
     private Random random;
     private Handler handler;
     private HUD hud;
     private Spawn spawner;
+    private Menu menu;
+    ;
 
     public Game() {
         handler = new Handler();
-
+        menu = new Menu(this, handler);
         this.addKeyListener(new KeyInput(handler));
-
+        this.addMouseListener(menu);
         new Window(WIDTH, HEIGHT, "Awesome Game!", this);
 
         hud = new HUD();
         spawner = new Spawn(handler, hud);
+        menu = new Menu(this, handler);
         random = new Random();
 
-        handler.addObject(new Player(WIDTH / 2 - 32, HEIGHT / 2 - 32, ID.Player, handler));
-        handler.addObject(new BasicEnemy(random.nextInt(Game.WIDTH), random.nextInt(Game.HEIGHT), ID.BasicEnemy, handler));
-
+        if (gameState == STATE.Game) {
+            handler.addObject(new Player(WIDTH / 2 - 32, HEIGHT / 2 - 32, ID.Player, handler));
+            handler.addObject(new BasicEnemy(random.nextInt(Game.WIDTH), random.nextInt(Game.HEIGHT), ID.BasicEnemy, handler));
+        }
     }
 
     public static float clamp(float var, float min, float max) {
@@ -94,8 +98,14 @@ public class Game extends Canvas implements Runnable {
 
     private void tick() {
         handler.tick();
-        hud.tick();
-        spawner.tick();
+
+        if (gameState == STATE.Game) {
+            hud.tick();
+            spawner.tick();
+        } else if (gameState == STATE.Menu) {
+            menu.tick();
+        }
+
     }
 
     private void render() {
@@ -110,9 +120,20 @@ public class Game extends Canvas implements Runnable {
         g.fillRect(0, 0, WIDTH, HEIGHT);
 
         handler.render(g);
-        hud.render(g);
+
+        if (gameState == STATE.Game) {
+            hud.render(g);
+        } else if (gameState == STATE.Menu || gameState == STATE.Help) {
+            menu.render(g);
+        }
 
         g.dispose();
         bs.show();
+    }
+
+    public enum STATE {
+        Menu,
+        Help,
+        Game
     }
 }
