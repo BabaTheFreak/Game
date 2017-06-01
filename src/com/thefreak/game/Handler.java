@@ -1,11 +1,12 @@
 package com.thefreak.game;
 
 import java.awt.*;
-import java.util.LinkedList;
+import java.util.*;
+import java.util.List;
 
 public class Handler {
 
-    LinkedList<GameObject> objects = new LinkedList<>();
+    List<GameObject> objects = new ArrayList<>();
 
     public void tick() {
         for (int i = 0; i < objects.size(); i++) {
@@ -35,7 +36,10 @@ public class Handler {
 
             if (tempObject.getID() == ID.Player) {
                 objects.clear();
-                addObject(new Player((int) tempObject.getX(), (int) tempObject.getY(), ID.Player, this));
+                if (Game.gameState != Game.STATE.End) {
+                    addObject(new Player((int) tempObject.getX(), (int) tempObject.getY(), ID.Player, this));
+                }
+
             }
         }
     }

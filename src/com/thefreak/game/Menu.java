@@ -7,13 +7,15 @@ import java.util.Random;
 
 public class Menu extends MouseAdapter {
 
-    private Game game;
+    //private Game game;
     private Handler handler;
     private Random random = new Random();
+    private HUD hud;
 
-    public Menu(Game game, Handler handler) {
-        this.game = game;
+    public Menu(Game game, Handler handler, HUD hud) {
+        //this.game = game;
         this.handler = handler;
+        this.hud = hud;
     }
 
     @Override
@@ -22,26 +24,48 @@ public class Menu extends MouseAdapter {
         int my = event.getY();
 
         //play button
-        if (mouseOver(mx, my, 210, 150, 200, 64) && game.gameState == Game.STATE.Menu) {
-            game.gameState = Game.STATE.Game;
-            handler.addObject(new Player(Game.WIDTH / 2 - 32, Game.HEIGHT / 2 - 32, ID.Player, handler));
-            handler.addObject(new BasicEnemy(random.nextInt(Game.WIDTH - 50), random.nextInt(Game.HEIGHT - 50), ID.BasicEnemy, handler));
+        if (Game.gameState == Game.STATE.Menu) {
+            if (mouseOver(mx, my, 210, 150, 200, 64)) {
+                Game.gameState = Game.STATE.Game;
+                handler.addObject(new Player(Game.WIDTH / 2 - 32, Game.HEIGHT / 2 - 32, ID.Player, handler));
+                handler.clearEnemys();
+                handler.addObject(new BasicEnemy(random.nextInt(Game.WIDTH - 50), random.nextInt(Game.HEIGHT - 50), ID.BasicEnemy, handler));
+            }
+
+            //help button
+            if (mouseOver(my, my, 210, 250, 200, 64)) {
+                Game.gameState = Game.STATE.Help;
+            }
+
+
+            //quit button
+            if (mouseOver(mx, my, 210, 350, 200, 64)) {
+                System.exit(1);
+            }
         }
 
-        //help button
-        if (mouseOver(my, my, 210, 250, 200, 64) && game.gameState == Game.STATE.Menu) {
-            game.gameState = Game.STATE.Help;
+        //back button for help
+        if (Game.gameState == Game.STATE.Help) {
+            if (mouseOver(mx, my, 210, 350, 200, 64)) {
+                Game.gameState = Game.STATE.Menu;
+            }
         }
 
-        //quit button
-        if (mouseOver(mx, my, 210, 350, 200, 64) && game.gameState == Game.STATE.Menu) {
-            System.exit(1);
+        //new game button
+        if (Game.gameState == Game.STATE.End) {
+            if (mouseOver(mx, my, 210, 350, 200, 64)) {
+                Game.gameState = Game.STATE.Game;
+                hud.setLevel(1);
+                hud.setScore(0);
+                handler.addObject(new Player(Game.WIDTH / 2 - 32, Game.HEIGHT / 2 - 32, ID.Player, handler));
+                handler.clearEnemys();
+                handler.addObject(new BasicEnemy(random.nextInt(Game.WIDTH - 50), random.nextInt(Game.HEIGHT - 50), ID.BasicEnemy, handler));
+            }
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent event) {
-
     }
 
     private boolean mouseOver(int mx, int my, int x, int y, int width, int height) {
@@ -49,18 +73,18 @@ public class Menu extends MouseAdapter {
     }
 
     public void tick() {
-
     }
 
     public void render(Graphics g) {
-        Font fnt = new Font("arial", 1, 50);
-        Font fnt2 = new Font("arial", 1, 30);
-        if (game.gameState == Game.STATE.Menu) {
+        Font fnt = new Font("arial", Font.BOLD, 50);
+        Font fnt2 = new Font("arial", Font.BOLD, 30);
+        Font fnt3 = new Font("arial", Font.BOLD, 20);
+        if (Game.gameState == Game.STATE.Menu) {
 
 
             g.setFont(fnt);
             g.setColor(Color.white);
-            g.drawString("Menu", 240, 70);
+            g.drawString("Dots", 240, 70);
 
             g.setFont(fnt2);
             g.setColor(Color.green);
@@ -80,13 +104,30 @@ public class Menu extends MouseAdapter {
 
             g.setColor(Color.white);
             g.drawRect(210, 350, 200, 64);
-        } else if (game.gameState == Game.STATE.Help) {
+        } else if (Game.gameState == Game.STATE.Help) {
             g.setFont(fnt);
             g.setColor(Color.white);
             g.drawString("Help", 240, 70);
+
+            g.setFont(fnt2);
+            g.drawRect(210, 350, 200, 64);
+            g.drawString("back", 270, 390);
+
+            g.setFont(fnt3);
+            g.setColor(Color.yellow);
+            g.drawString("Use WASD keys to move player and dodge enemies", 70, 200);
+        } else if (Game.gameState == Game.STATE.End) {
+            g.setFont(fnt);
+            g.setColor(Color.white);
+            g.drawString("Game Over", 180, 70);
+
+            g.setFont(fnt3);
+            g.setColor(Color.yellow);
+            g.drawString("You lost with a score of: " + hud.getScore(), 170, 200);
+
+            g.setFont(fnt2);
+            g.drawRect(210, 350, 200, 64);
+            g.drawString("Try Again", 245, 390);
         }
-
-
     }
-
 }

@@ -55,7 +55,9 @@ public class KeyInput extends KeyAdapter {
     public void keyReleased(KeyEvent e) {
         int key = e.getKeyCode();
 
-        for (GameObject tempObject : handler.objects) {
+        for (int i = 0; i < handler.objects.size(); i++) {
+
+            GameObject tempObject = handler.objects.get(i);
 
             if(tempObject.getID() == ID.Player) {
                 //key events for player 1
